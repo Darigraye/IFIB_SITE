@@ -20,5 +20,6 @@ urlpatterns = [
     path('add_marker/', AddMarkerView.as_view(), name='add_marker'),
     path('add_immunophenotipation/', AddImmunoView.as_view(), name='add_immunophenotipation'),
     path('add_researched_object/', AddResearchedObject.as_view(), name='add_researched_object'),
+    path('draw/', draw, name='draw'),
     path('<str:username>/', ShowProfileView.as_view(), name='profile')
 ]

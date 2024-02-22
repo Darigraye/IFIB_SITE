@@ -1,11 +1,17 @@
-from django.http import HttpResponseRedirect
+import base64
+import json
+from uuid import uuid4
+
+from django.core.files.base import ContentFile
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from .forms import *
 from .models import *
 from .utils import MetaDataMixin
@@ -244,3 +250,26 @@ class AddResearchedObject(CreateView, MetaDataMixin):
         additional_context = super().get_user_context()
 
         return dict(list(context.items()) + list(additional_context.items()))
+
+
+@csrf_exempt
+def draw(request):
+    if request.method == 'POST':
+        requestData = request.body
+        requestDataJSON = json.loads(requestData)
+        print("sdfsdf", requestDataJSON["x"], requestDataJSON["y"])
+        #print(request.body)
+        base64_string = requestDataJSON["data"]
+        format, imgstr = base64_string.split(';base64,')
+        ext = format.split('/')[-1]
+
+        Marking.objects.create(colour = '123',
+                                x1 = requestDataJSON["x"],
+                                x2 = requestDataJSON["y"],
+                                y1 = requestDataJSON["c"],
+                                y2 = requestDataJSON["d"])
+
+        img = ContentFile(base64.b64decode(imgstr), name=uuid4().hex + "." + ext)
+
+        return HttpResponse('{"message"} : "success"')
+    return render(request, 'functions/draw.html')
