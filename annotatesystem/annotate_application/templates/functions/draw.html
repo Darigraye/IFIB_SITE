@@ -34,6 +34,9 @@
             <div class="row">
 <!--                <h1>Тут будут кнопки</h1>-->
                 <input type="file" id="input" />
+                <button  onclick="save_rect()" class="btn btn-primary btn-block itd_enter_btn ">Сохранить</button>-->
+                <button  onclick="draw_tool()" class="btn btn-primary btn-block itd_enter_btn ">Rectangle</button>-->
+                <button  onclick="zoom_tool()" class="btn btn-primary btn-block itd_enter_btn ">Zoom</button>-->
             </div>
         </div>
         <div class="container-fluid draw_container">
@@ -126,7 +129,8 @@
 <!--            <button onclick="draw()">Построить прямоугольник</button>-->
 <!--        </div>-->
     <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
-    <script type = "text/javascript" src = "{% static 'annotate_application/paint.js' %}"></script>
+<!--    <script type = "text/javascript" src = "{% static 'annotate_application/paint.js' %}"></script>-->
+    <script type = "text/javascript" src = "{% static 'annotate_application/zoom.js' %}"></script>
     {% endblock content%}
     </body>
 </html>

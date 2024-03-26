@@ -1,4 +1,8 @@
-//var canvas = document.getElementsByTagName('canvas')[0];
+var coord_map = new Map();
+var counter_clet = 1;
+var is_zoom = true;
+
+//-----------------------------------------------------
 let canvas = document.getElementById("draw_canvas");
   // Размеры canvas
   canvas.width = 800;
@@ -9,148 +13,233 @@ let canvas = document.getElementById("draw_canvas");
   let current_picture = new Image;
 
   window.onload = function(){
-    var ctx = canvas.getContext('2d');
-    trackTransforms(ctx);
-    function redraw(){
-      // Clear the entire canvas
-      var p1 = ctx.transformedPoint(0,0);
-      var p2 = ctx.transformedPoint(canvas.width,canvas.height);
-      ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
 
-      // Alternatively:
-      // ctx.save();
-      // ctx.setTransform(1,0,0,1,0,0);
-      // ctx.clearRect(0,0,canvas.width,canvas.height);
-      // ctx.restore();
+        var context, canvaso, contexto, file_input;
+        var tools = {};
+        var tool;
+        var tool_default = "rect";
 
-      ctx.drawImage(current_picture,0,0);
+        canvaso = document.getElementById("draw_canvas");
+        contexto = canvaso.getContext("2d");
+        canvas = canvaso;
+        context = canvas.getContext("2d");
+        if (tools[tool_default]) {
+          tool = new tools[tool_default]();
+        }
+        var tool = tools;
+        tools.started = false;
 
-//      ctx.beginPath();
-//      ctx.lineWidth = 6;
-//      ctx.moveTo(399,250);
-//      ctx.lineTo(474,256);
-//      ctx.stroke();
+        var ctx = canvas.getContext('2d');
+        trackTransforms(ctx);
+        function redraw(){
+          // Clear the entire canvas
+          var p1 = ctx.transformedPoint(0,0);
+          var p2 = ctx.transformedPoint(canvas.width,canvas.height);
+          ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
 
-//      ctx.save();
-//      ctx.translate(4,2);
-//      ctx.beginPath();
-//      ctx.lineWidth = 1;
-//      ctx.moveTo(436,253);
-//      ctx.lineTo(437.5,233);
-//      ctx.stroke();
-
-//      ctx.save();
-//      ctx.translate(438.5,223);
-//      ctx.strokeStyle = '#06c';
-//      ctx.beginPath();
-//      ctx.lineWidth = 0.05;
-//      for (var i=0;i<60;++i){
-//        ctx.rotate(6*i*Math.PI/180);
-//        ctx.moveTo(9,0);
-//        ctx.lineTo(10,0);
-//        ctx.rotate(-6*i*Math.PI/180);
-//      }
-//      ctx.stroke();
-//      ctx.restore();
-//
-//      ctx.beginPath();
-//      ctx.lineWidth = 0.2;
-//      ctx.arc(438.5,223,10,0,Math.PI*2);
-//      ctx.stroke();
-//      ctx.restore();
-//
-//      ctx.drawImage(ball,379,233,40,40);
-//      ctx.drawImage(ball,454,239,40,40);
-//      ctx.drawImage(ball,310,295,20,20);
-//      ctx.drawImage(ball,314.5,296.5,5,5);
-//      ctx.drawImage(ball,319,297.2,5,5);
-    }
-    redraw();
-
-    if (window.FileList && window.File && window.FileReader) {
-    document.getElementById('input').addEventListener('change', event => {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      redraw();
-      reader.addEventListener('load', event => {
-
-        current_picture.src = event.target.result;
-        redraw();
-      });
-      reader.readAsDataURL(file);
+          ctx.drawImage(current_picture,0,0);
+          context.strokeStyle = "black";
+          for (let key in coord_map) {
+            //console.log(key, coord_map[key]);
+            //console.log(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+            context.strokeRect(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+          }
+        }
           redraw();
 
-    });
-    }
+        if (window.FileList && window.File && window.FileReader) {
+        document.getElementById('input').addEventListener('change', event => {
+          const file = event.target.files[0];
+          const reader = new FileReader();
+          redraw();
+          reader.addEventListener('load', event => {
 
+            current_picture.src = event.target.result;
+            redraw();
+          });
+          reader.readAsDataURL(file);
+              redraw();
 
-
-    var lastX=canvas.width/2, lastY=canvas.height/2;
-    var dragStart,dragged;
-    canvas.addEventListener('mousedown',function(evt){
-      document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
-      lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-      lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-      dragStart = ctx.transformedPoint(lastX,lastY);
-      dragged = false;
-    },false);
-    canvas.addEventListener('mousemove',function(evt){
-      lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-      lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-      dragged = true;
-      if (dragStart){
-        var pt = ctx.transformedPoint(lastX,lastY);
-        ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
-        redraw();
-      }
-    },false);
-    canvas.addEventListener('mouseup',function(evt){
-      dragStart = null;
-      if (!dragged) zoom(evt.shiftKey ? -1 : 1 );
-    },false);
-
-    var scaleFactor = 1.1;
-    var zoom = function(clicks){
-      var pt = ctx.transformedPoint(lastX,lastY);
-      ctx.translate(pt.x,pt.y);
-      var factor = Math.pow(scaleFactor,clicks);
-//      ctx.scale(factor,factor);
-      var scale = ctx.getTransform().a;
-      var decision = true;
-      if (factor < 1) {
-      // this is zoom out
-        if (scale < scaleLowerLimit) {
-            decision = false;
+        });
         }
-      } else if (factor > 1) {
-      // this is zoom in
-        if (scale > scaleUpperLimit) {
+
+        var lastX=canvas.width/2, lastY=canvas.height/2;
+        var dragStart,dragged;
+        canvas.addEventListener('mousedown',function(evt){
+            let rect_canv = canvas.getBoundingClientRect()
+            if (evt.layerX || evt.layerX == 0) {
+              evt._x = evt.layerX - rect_canv.left;
+              evt._y = evt.layerY - rect_canv.top;
+            } else if (evt.offsetX || evt.offsetX == 0) {
+              evt._x = evt.offsetX - rect_canv.left;
+              evt._y = evt.offsetY - rect_canv.top;
+            }
+
+            var func = tool[evt.type];
+            if (func) {
+              func(evt);
+            }
+
+          if (is_zoom) {
+              document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
+              lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+              lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+              dragStart = ctx.transformedPoint(lastX,lastY);
+              dragged = false;
+          } else {
+              redraw();
+              tool.started = true;
+              tool.x0 = evt._x;
+              tool.y0 = evt._y;
+              a = evt._x;
+              b = evt._y;
+          }
+        },false);
+        canvas.addEventListener('mousemove',function(evt){
+            let rect_canv = canvas.getBoundingClientRect()
+            if (evt.layerX || evt.layerX == 0) {
+              evt._x = evt.layerX - rect_canv.left;
+              evt._y = evt.layerY - rect_canv.top;
+            } else if (evt.offsetX || evt.offsetX == 0) {
+              evt._x = evt.offsetX - rect_canv.left;
+              evt._y = evt.offsetY - rect_canv.top;
+            }
+
+            var func = tool[evt.type];
+            if (func) {
+              func(evt);
+            }
+            if (is_zoom) {
+              lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+              lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+              dragged = true;
+              if (dragStart){
+                var pt = ctx.transformedPoint(lastX,lastY);
+                ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
+                redraw();
+              }
+          } else {
+                redraw();
+              if (!tool.started) {
+                return;
+              }
+              var x = Math.min(evt._x, tool.x0),
+                y = Math.min(evt._y, tool.y0),
+                w = Math.abs(evt._x - tool.x0),
+                h = Math.abs(evt._y - tool.y0);
+
+//              context.clearRect(0, 0, canvas.width, canvas.height);
+              context.strokeStyle = "black";
+              for (let key in coord_map) {
+                //console.log(key, coord_map[key]);
+                //console.log(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+                context.strokeRect(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+              }
+
+              if (!w || !h) {
+                return;
+              }
+              context.setLineDash([6]);
+              context.strokeStyle = "red";
+              context.strokeRect(x, y, w, h);
+          }
+        },false);
+        canvas.addEventListener('mouseup',function(evt){
+            let rect_canv = canvas.getBoundingClientRect()
+            if (evt.layerX || evt.layerX == 0) {
+              evt._x = evt.layerX - rect_canv.left;
+              evt._y = evt.layerY - rect_canv.top;
+            } else if (evt.offsetX || evt.offsetX == 0) {
+              evt._x = evt.offsetX - rect_canv.left;
+              evt._y = evt.offsetY - rect_canv.top;
+            }
+
+            var func = tool[evt.type];
+            if (func) {
+              func(evt);
+            }
+          if (is_zoom) {
+              dragStart = null;
+              if (!dragged) zoom(evt.shiftKey ? -1 : 1 );
+          } else {
+//            redraw();
+            if (tool.started) {
+//            tool.mousemove(evt);
+            c = evt._x;
+            d = evt._y;
+            tool.started = false;
+
+            coord_map[counter_clet] = [tool.x0, tool.y0, evt._x, evt._y];
+
+//            let div = document.createElement('div');
+//            div.className = "row my-2";
+//            //div.innerHTML = <label class=\"plain_text\">Kletka #${counter_clet - 1}</label>;
+//            div.innerHTML = `<div class="dropdown">
+//                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+//                    Клетка №${counter_clet}
+//                  </button>
+//                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+//                    <li><label class="plain_text reg_label">Описание</label>
+//                          <textarea class="form-control mb-3" id=cl_descrip${counter_clet} name="description">Example</textarea></li>
+//          <li><label onclick=savedescrip(${counter_clet})>Сохранить</label></li>
+//            <li><label onclick="cleanlastcell()">Удалить</label></li>
+//                  </ul>
+//                </div>`;
+//            add_cletka.append(div);
+
+            counter_clet = counter_clet + 1;
+
+            context.setLineDash([6]);
+            context.strokeStyle = "black";
+            context.strokeRect(tool.x0, tool.y0, evt._x - tool.x0, evt._y - tool.y0);
+            //console.log(coord_map);
+          }
+          }
+        },false);
+
+        var scaleFactor = 1.1;
+        var zoom = function(clicks){
+          var pt = ctx.transformedPoint(lastX,lastY);
+          ctx.translate(pt.x,pt.y);
+          var factor = Math.pow(scaleFactor,clicks);
+    //      ctx.scale(factor,factor);
+          var scale = ctx.getTransform().a;
+          var decision = true;
+          if (factor < 1) {
+          // this is zoom out
+            if (scale < scaleLowerLimit) {
+                decision = false;
+            }
+          } else if (factor > 1) {
+          // this is zoom in
+            if (scale > scaleUpperLimit) {
+                decision = false;
+            }
+          } else {
             decision = false;
+          }
+          if (decision == true) {
+            ctx.scale(factor, factor);
+          }
+
+
+
+          ctx.translate(-pt.x,-pt.y);
+          redraw();
+
+
+
         }
-      } else {
-        decision = false;
-      }
-      if (decision == true) {
-        ctx.scale(factor, factor);
-      }
 
+        var handleScroll = function(evt){
+          var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
+          if (delta) zoom(delta);
+          return evt.preventDefault() && false;
+        };
+        canvas.addEventListener('DOMMouseScroll',handleScroll,false);
+        canvas.addEventListener('mousewheel',handleScroll,false);
+      };
 
-
-      ctx.translate(-pt.x,-pt.y);
-      redraw();
-
-
-
-    }
-
-    var handleScroll = function(evt){
-      var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
-      if (delta) zoom(delta);
-      return evt.preventDefault() && false;
-    };
-    canvas.addEventListener('DOMMouseScroll',handleScroll,false);
-    canvas.addEventListener('mousewheel',handleScroll,false);
-  };
 
   // Adds ctx.getTransform() - returns an SVGMatrix
   // Adds ctx.transformedPoint(x,y) - returns an SVGPoint
@@ -209,3 +298,30 @@ let canvas = document.getElementById("draw_canvas");
       return pt.matrixTransform(xform.inverse());
     }
   }
+
+
+//--------------------------------------------
+
+
+
+ function save_rect() {
+     console.log("SAVESAVESAVE");
+     console.log(JSON.stringify(coord_map));
+          console.log(coord_map);
+    var canvaso = document.getElementById("draw_canvas");
+//    coord_map['img'] = canvaso.toDataURL('image/png');
+    fetch('/draw/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(coord_map)
+     })
+ }
+
+ function zoom_tool() {
+    is_zoom = true;
+ }
+ function draw_tool() {
+    is_zoom = false;
+ }

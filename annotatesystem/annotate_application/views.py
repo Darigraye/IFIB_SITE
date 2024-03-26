@@ -257,7 +257,7 @@ def draw(request):
     if request.method == 'POST':
         requestData = request.body
         requestDataJSON = json.loads(requestData)
-        print("sdfsdf", requestDataJSON["x"], requestDataJSON["y"])
+        print("sdfsdf", requestDataJSON)
         #print(request.body)
         base64_string = requestDataJSON["data"]
         format, imgstr = base64_string.split(';base64,')

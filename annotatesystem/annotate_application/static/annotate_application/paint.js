@@ -5,6 +5,7 @@ var d;
 
 var coord_map = new Map();
 var counter_clet = 1;
+var is_zoom = true;
 if (window.addEventListener) {
   window.addEventListener(
     "load",
@@ -81,12 +82,13 @@ if (window.addEventListener) {
       }
 
       function ev_canvas(ev) {
+        let rect_canv = canvas.getBoundingClientRect()
         if (ev.layerX || ev.layerX == 0) {
-          ev._x = ev.layerX;
-          ev._y = ev.layerY;
+          ev._x = ev.layerX - rect_canv.left;
+          ev._y = ev.layerY - rect_canv.top;
         } else if (ev.offsetX || ev.offsetX == 0) {
-          ev._x = ev.offsetX;
-          ev._y = ev.offsetY;
+          ev._x = ev.offsetX - rect_canv.left;
+          ev._y = ev.offsetY - rect_canv.top;
         }
 
         var func = tool[ev.type];
@@ -96,18 +98,18 @@ if (window.addEventListener) {
       }
 
       // Обработчик событий для изменения селекта
-      function ev_tool_change(ev) {
-        if (tools[this.value]) {
-          tool = new tools[this.value]();
-        }
-      }
+//      function ev_tool_change(ev) {
+//        if (tools[this.value]) {
+//          tool = new tools[this.value]();
+//        }
+//      }
 
       // Эта функция вызывается каждый раз после того, как пользователь
       // завершит рисование. Она очищает imageTemp.
       function img_update() {
-        console.log(context)
-        contexto.drawImage(canvas, 0, 0);
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        console.log("wwwwww")
+//        contexto.drawImage(canvas, 0, 0);
+//        context.clearRect(0, 0, canvas.width, canvas.height);
       }
 
       function GetImage(){
@@ -179,34 +181,34 @@ if (window.addEventListener) {
 
 
 
-      function draw_picture(url) {
-        var img = new Image();
-        img.setAttribute("crossOrigin", "anonymous");
-        img.onload = () => {
-          context.drawImage(img, 1, 1);
-          img_update();
-        };
+//      function draw_picture(url) {
+//        var img = new Image();
+//        img.setAttribute("crossOrigin", "anonymous");
+//        img.onload = () => {
+//          context.drawImage(img, 1, 1);
+//          img_update();
+//        };
+//
+//        img.src = url;
+//      }
 
-        img.src = url;
-      }
-
-      function ev_upload_picture(ev) {
-        if (!FileReader) {
-          alert("FileReader не поддерживается");
-          return;
-        }
-
-        if (!ev.target.files.length) {
-          return;
-        }
-        const fileReader = new FileReader();
-
-        fileReader.addEventListener("load", async () => {
-          draw_picture(fileReader.result);
-        });
-
-        fileReader.readAsDataURL(ev.target.files[0]);
-      }
+//      function ev_upload_picture(ev) {
+//        if (!FileReader) {
+//          alert("FileReader не поддерживается");
+//          return;
+//        }
+//
+//        if (!ev.target.files.length) {
+//          return;
+//        }
+//        const fileReader = new FileReader();
+//
+//        fileReader.addEventListener("load", async () => {
+//          draw_picture(fileReader.result);
+//        });
+//
+//        fileReader.readAsDataURL(ev.target.files[0]);
+//      }
 
       // Содержит реализацию каждого инструмента рисования
       var tools = {};
@@ -243,6 +245,12 @@ if (window.addEventListener) {
             h = Math.abs(ev._y - tool.y0);
 
           context.clearRect(0, 0, canvas.width, canvas.height);
+          context.strokeStyle = "black";
+          for (let key in coord_map) {
+            console.log(key, coord_map[key]);
+            console.log(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+            context.strokeRect(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+          }
 
           if (!w || !h) {
             return;
@@ -261,7 +269,7 @@ if (window.addEventListener) {
             d = ev._y;
             tool.started = false;
 
-            coord_map[`$counter_clet`] = [tool.x0, tool.y0, ev._x, ev._y, ""];
+            coord_map[counter_clet] = [tool.x0, tool.y0, ev._x, ev._y, ""];
             //coord_map.set(counter_clet, [tool.x0, tool.y0, ev._x, ev._y, ""]);
 
 //            let div = document.createElement('div');
@@ -283,7 +291,7 @@ if (window.addEventListener) {
             counter_clet = counter_clet + 1;
 
             context.setLineDash([6]);
-            context.strokeStyle = "yellow";
+            context.strokeStyle = "black";
             context.strokeRect(tool.x0, tool.y0, ev._x - tool.x0, ev._y - tool.y0);
 
             console.log(coord_map);
@@ -348,7 +356,7 @@ function cleanlastcell() {
  }
 
  function save_rect() {
-    console.log("SAVESAVESAVE");
+     console.log("SAVESAVESAVE");
      console.log(JSON.stringify(coord_map));
           console.log(coord_map);
     var canvaso = document.getElementById("draw_canvas");
@@ -362,4 +370,9 @@ function cleanlastcell() {
      })
  }
 
-
+ function zoom_tool() {
+    is_zoom = true;
+ }
+ function draw_tool() {
+    is_zoom = false;
+ }
