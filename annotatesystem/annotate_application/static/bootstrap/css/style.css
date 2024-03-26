@@ -163,3 +163,7 @@
 .patient_body {
     background: var(--color3);
 }
+
+.draw_buttons {
+    border: 1px solid #ccc;
+}

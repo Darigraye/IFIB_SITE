@@ -7,91 +7,102 @@
     <head>
         <meta http-equiv = "Content-Type" content = "text/html; charset = utf-8" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <link href="{% static 'bootstrap/css/library.css' %}" rel="stylesheet">
-        <script type = "text/javascript" src = "{% static 'annotate_application/paint.js' %}"></script>
-        <title>Рисовалка</title>
-        <style type="text/css">
-            #wrapper { position: relative; }
-            #tablet { border: 1px solid #111; }
-            #imageTemp { position: absolute; top: 1px; left: 1px; }
-            #file-input {
-                width:115px;
-                overflow: hidden;
-            }
-        </style>
+<!--        <link href="{% static 'bootstrap/css/library.css' %}" rel="stylesheet">-->
+<!--        <script type = "text/javascript" src = "{% static 'annotate_application/zoom.js' %}"></script>-->
+        <title>Annotate</title>
+      <style type="text/css" media="screen">
+        body { background:#eee }
+        .draw_buttons {  border: 3px solid #00cc00 }
+        .draw_container {  border: 3px solid #0000cc }
+        .draw_place { border: 3px solid #ffff00 }
+        canvas { display:block; background:#fff; margin: 1em auto; border: 1px solid #cc0000 }
+      </style>
+        <!--        <style type="text/css">-->
+<!--            #wrapper { position: relative; }-->
+<!--            #tablet { border: 1px solid #111; }-->
+<!--            #imageTemp { position: absolute; top: 1px; left: 1px; }-->
+<!--            #file-input {-->
+<!--                width:115px;-->
+<!--                overflow: hidden;-->
+<!--            }-->
+<!--        </style>-->
     </head>
 
     <body>
-        <input type="text" placeholder="name" class="valueName">
-        <input type="button" value="save" class="saveButton">
-        <input type="button" value="get" class="getButton">
-        <br>
-        <br>
+    <section>
+        <div class="container-fluid draw_buttons">
+            <div class="row">
+<!--                <h1>Тут будут кнопки</h1>-->
+                <input type="file" id="input" />
+            </div>
+        </div>
+        <div class="container-fluid draw_container">
+            <div class="row">
+                <div class="col-8 draw_place">
+                    <canvas width="800" height="550" id="draw_canvas"></canvas>
+                </div>
+                <div class="col-4 info_place">
 
-
-<!--        <label for = "tools">Инструмент рисования:</label>-->
-<!--        <select id = "tools" name = "tools">-->
-<!--            <option value = "line">Линия</option>-->
-<!--            <option value = "rect">Прямоугольник</option>-->
-<!--            <option value = "pencil">Карандаш</option>-->
-<!--            <option value = "circle">Круг</option>-->
-<!--            <option value = "arrow">Стрелка</option>-->
-<!--        </select>-->
-        <section>
-            <div class="container-fluid draw_container">
-                <div class="row tools_bar">
-                    <div class="col-6 tool_button my-auto">
-                        <button type="submit" class="btn btn-primary btn-block itd_enter_btn mx-1" id="tools" name="tools" value="rect">Прямоугольник</button>
-
-<!--                        <button type="submit" class="btn btn-primary btn-block itd_enter_btn mx-1" id="tools_move" name="tools" value="line">Перемещение</button>-->
-
-                        <label for="file-input" class="btn btn-primary btn-block itd_enter_btn shfile mx-1">Выбор файла
-                            <input type="file" id="file-input">
-                        </label>
-
-                        <button  onclick="save_rect()" class="btn btn-primary btn-block itd_enter_btn mx-1">Сохранить</button>
-
-                        <button type="submit" class="btn btn-primary btn-block itd_enter_btn mx-1">Отменить</button>
-
-                        <button  onclick="clearcanvas1()" class="btn btn-primary btn-block itd_enter_btn mx-1">Отчистить</button>
-                    </div>
-                    <div class="col-6 tool_button">
-
-                    </div>
                 </div>
             </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-6 cl_left" id="left_zone">
 
-                    </div>
-                    <div class="col-6 cl_right" id="right_zone">
+        </div>
+    </section>
+<!--        <section>-->
+<!--            <div class="container-fluid draw_container">-->
+<!--                <div class="row tools_bar">-->
+<!--                    <div class="col-6 tool_button my-auto">-->
+<!--                        <button type="submit" class="btn btn-primary btn-block itd_enter_btn mx-1" id="tools" name="tools" value="rect">Прямоугольник</button>-->
 
-                    </div>
-                </div>
-                <tspan id="test_zone">
+<!--&lt;!&ndash;                        <button type="submit" class="btn btn-primary btn-block itd_enter_btn mx-1" id="tools_move" name="tools" value="line">Перемещение</button>&ndash;&gt;-->
 
-                </tspan>
-            </div>
-            <div class="container-fluid draw_container">
-                <div class="row">
-                    <div class="col-10 tool_button">
-                        <div id = "wrapper">
-                            <canvas id = "tablet" width = "1550" height = "800">
-                                <p>К сожалению, ваш браузер не поддерживает данную функцию.</p>
-                            </canvas>
-                        </div>
-                    </div>
-                    <div class="col-2 tool_button" id="add_cletka">
+<!--                        <label for="file-input" class="btn btn-primary btn-block itd_enter_btn shfile mx-1">Выбор файла-->
+<!--                            <input type="file" id="file-input">-->
+<!--                        </label>-->
 
-                    </div>
-                </div>
-            </div>
-        </section>
+<!--                        <button  onclick="save_rect()" class="btn btn-primary btn-block itd_enter_btn mx-1">Сохранить</button>-->
+
+<!--                        <button type="submit" class="btn btn-primary btn-block itd_enter_btn mx-1">Отменить</button>-->
+
+<!--                        <button  onclick="clearcanvas1()" class="btn btn-primary btn-block itd_enter_btn mx-1">Отчистить</button>-->
+<!--                    </div>-->
+<!--                    <div class="col-6 tool_button">-->
+
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="container">-->
+<!--                <div class="row">-->
+<!--                    <div class="col-6 cl_left" id="left_zone">-->
+
+<!--                    </div>-->
+<!--                    <div class="col-6 cl_right" id="right_zone">-->
+
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <tspan id="test_zone">-->
+
+<!--                </tspan>-->
+<!--            </div>-->
+<!--            <div class="container-fluid draw_container">-->
+<!--                <div class="row">-->
+<!--                    <div class="col-10 tool_button">-->
+<!--                        <div id = "wrapper">-->
+<!--                            <canvas id = "tablet" width = "1550" height = "800">-->
+<!--                                <p>К сожалению, ваш браузер не поддерживает данную функцию.</p>-->
+<!--                            </canvas>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-2 tool_button" id="add_cletka">-->
+
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </section>-->
 
 
-        <input type="file" id="file-input">
-        <button onclick="clearcanvas1()">Очистить</button>
+<!--        <input type="file" id="file-input">-->
+<!--        <button onclick="clearcanvas1()">Очистить</button>-->
 
 <!--        <div id = "wrapper">-->
 <!--            <canvas id = "tablet" width = "2048" height = "2048">-->
@@ -115,6 +126,7 @@
 <!--            <button onclick="draw()">Построить прямоугольник</button>-->
 <!--        </div>-->
     <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
+    <script type = "text/javascript" src = "{% static 'annotate_application/paint.js' %}"></script>
     {% endblock content%}
     </body>
 </html>

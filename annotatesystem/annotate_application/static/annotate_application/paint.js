@@ -16,7 +16,7 @@ if (window.addEventListener) {
       var tool_default = "rect";
 
       function init() {
-        canvaso = document.getElementById("tablet");
+        canvaso = document.getElementById("draw_canvas");
         file_input = document.getElementById("file-input");
         if (!canvaso) {
           alert("Ошибка! Canvas элемент не найден!");
@@ -34,39 +34,40 @@ if (window.addEventListener) {
           return;
         }
 
-        var container = canvaso.parentNode;
-        canvas = document.createElement("canvas");
+//        var container = canvaso.parentNode;
+//        canvas = document.createElement("canvas");
+        canvas = canvaso;
         if (!canvas) {
           alert("Ошибка! Не могу создать canvas элемент!");
           return;
         }
 
-        canvas.id = "imageTemp";
+//        canvas.id = "imageTemp";
         canvas.width = canvaso.width;
         canvas.height = canvaso.height;
-        container.appendChild(canvas);
+//        container.appendChild(canvas);
 
         context = canvas.getContext("2d");
 
         // Получаем инструмент из option
-        var tool_select = document.getElementById("tools");
-        if (!tool_select) {
-           alert("Ошибка! Элемент tools не найден!");
-           return;
-        }
-        tool_select.addEventListener("change", ev_tool_change, false);
+//        var tool_select = document.getElementById("rect");
+//        if (!tool_select) {
+//           alert("Ошибка! Элемент tools не найден!");
+//           return;
+//        }
+//        tool_select.addEventListener("change", ev_tool_change, false);
 
         // Активируем способ рисования по-умолчанию
         if (tools[tool_default]) {
           tool = new tools[tool_default]();
-          tool_select.value = tool_default;
+//          tool_select.value = tool_default;
         }
 
         canvas.addEventListener("mousedown", ev_canvas, false);
         canvas.addEventListener("mousemove", ev_canvas, false);
         canvas.addEventListener("mouseup", ev_canvas, false);
 
-        file_input.addEventListener("change", ev_upload_picture);
+//        file_input.addEventListener("change", ev_upload_picture);
 
 //        var SaveButton = document.getElementsByClassName("saveButton")[0]
 //        console.log(SaveButton)
@@ -79,20 +80,20 @@ if (window.addEventListener) {
 
       }
 
-//      function ev_canvas(ev) {
-//        if (ev.layerX  ev.layerX == 0) {
-//          ev._x = ev.layerX;
-//          ev._y = ev.layerY;
-//        } else if (ev.offsetX  ev.offsetX == 0) {
-//          ev._x = ev.offsetX;
-//          ev._y = ev.offsetY;
-//        }
-//
-//        var func = tool[ev.type];
-//        if (func) {
-//          func(ev);
-//        }
-//      }
+      function ev_canvas(ev) {
+        if (ev.layerX || ev.layerX == 0) {
+          ev._x = ev.layerX;
+          ev._y = ev.layerY;
+        } else if (ev.offsetX || ev.offsetX == 0) {
+          ev._x = ev.offsetX;
+          ev._y = ev.offsetY;
+        }
+
+        var func = tool[ev.type];
+        if (func) {
+          func(ev);
+        }
+      }
 
       // Обработчик событий для изменения селекта
       function ev_tool_change(ev) {
@@ -260,24 +261,24 @@ if (window.addEventListener) {
             d = ev._y;
             tool.started = false;
 
-            coord_map[${counter_clet}] = [tool.x0, tool.y0, ev._x, ev._y, ""];
+            coord_map[`$counter_clet`] = [tool.x0, tool.y0, ev._x, ev._y, ""];
             //coord_map.set(counter_clet, [tool.x0, tool.y0, ev._x, ev._y, ""]);
 
-            let div = document.createElement('div');
-            div.className = "row my-2";
-            //div.innerHTML = <label class=\"plain_text\">Kletka #${counter_clet - 1}</label>;
-            div.innerHTML = `<div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    Клетка №${counter_clet}
-                  </button>
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    <li><label class="plain_text reg_label">Описание</label>
-                          <textarea class="form-control mb-3" id=cl_descrip${counter_clet} name="description">Example</textarea></li>
-          <li><label onclick=savedescrip(${counter_clet})>Сохранить</label></li>
-            <li><label onclick="cleanlastcell()">Удалить</label></li>
-                  </ul>
-                </div>`;
-            add_cletka.append(div);
+//            let div = document.createElement('div');
+//            div.className = "row my-2";
+//            //div.innerHTML = <label class=\"plain_text\">Kletka #${counter_clet - 1}</label>;
+//            div.innerHTML = `<div class="dropdown">
+//                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+//                    Клетка №${counter_clet}
+//                  </button>
+//                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+//                    <li><label class="plain_text reg_label">Описание</label>
+//                          <textarea class="form-control mb-3" id=cl_descrip${counter_clet} name="description">Example</textarea></li>
+//          <li><label onclick=savedescrip(${counter_clet})>Сохранить</label></li>
+//            <li><label onclick="cleanlastcell()">Удалить</label></li>
+//                  </ul>
+//                </div>`;
+//            add_cletka.append(div);
 
             counter_clet = counter_clet + 1;
 
@@ -311,35 +312,35 @@ if (window.addEventListener) {
 }
 
 function draw() {
-  var canvas = document.getElementById("tablet");
+  var canvas = document.getElementById("draw_canvas");
   if (canvas.getContext) {
     var context = canvas.getContext("2d");
     x1 = document.getElementById("x1").value;
     x2 = document.getElementById("x2").value;
     y1 = document.getElementById("y1").value;
     y2 = document.getElementById("y2").value;
-    //context.strokeRect(x1, y1, x2 - x1, y2 - y1);
+//    context.strokeRect(x1, y1, x2 - x1, y2 - y1);
   }
 }
 
 function clearcanvas1() {
-  var canvas = document.getElementById("tablet"),
+  var canvas = document.getElementById("draw_canvas"),
     context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
-  var cont = document.getElementById('add_cletka');
-  cont.replaceChildren();
+//  var cont = document.getElementById('add_cletka');
+//  cont.replaceChildren();
 }
 
 function cleanlastcell() {
-  var canvas = document.getElementById("tablet"),
+  var canvas = document.getElementById("draw_canvas"),
     context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
-  var cont = document.getElementById('add_cletka');
-  cont.removeChild(cont.lastChild);
+//  var cont = document.getElementById('add_cletka');
+//  cont.removeChild(cont.lastChild);
 }
  function savedescrip(cur_count) {
-    var cont = document.getElementById(cl_descrip${cur_count});
-    coord_map[${cur_count}][4] = cont.value;
+    var cont = document.getElementById(cl_descrip`$cur_count`);
+    coord_map[`$cur_count`][4] = cont.value;
     //coord_map.get(cur_count)[4] = cont.value;
     console.log(cur_count);
     console.log(coord_map);
@@ -350,7 +351,7 @@ function cleanlastcell() {
     console.log("SAVESAVESAVE");
      console.log(JSON.stringify(coord_map));
           console.log(coord_map);
-    var canvaso = document.getElementById("tablet");
+    var canvaso = document.getElementById("draw_canvas");
     coord_map['img'] = canvaso.toDataURL('image/png');
     fetch('/draw/', {
                 method: 'POST',
@@ -360,3 +361,5 @@ function cleanlastcell() {
                 body: JSON.stringify(coord_map)
      })
  }
+
+
