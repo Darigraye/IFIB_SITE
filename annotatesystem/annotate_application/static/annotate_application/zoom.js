@@ -176,21 +176,22 @@ let canvas = document.getElementById("draw_canvas");
             var scale = ctx.getTransform().a;
             coord_map[counter_clet] = [tool.x0 / scale + pt.x, tool.y0 / scale + pt.y, evt._x / scale + pt.x, evt._y / scale + pt.y];
 
-//            let div = document.createElement('div');
-//            div.className = "row my-2";
-//            //div.innerHTML = <label class=\"plain_text\">Kletka #${counter_clet - 1}</label>;
-//            div.innerHTML = `<div class="dropdown">
-//                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-//                    Клетка №${counter_clet}
-//                  </button>
-//                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-//                    <li><label class="plain_text reg_label">Описание</label>
-//                          <textarea class="form-control mb-3" id=cl_descrip${counter_clet} name="description">Example</textarea></li>
-//          <li><label onclick=savedescrip(${counter_clet})>Сохранить</label></li>
-//            <li><label onclick="cleanlastcell()">Удалить</label></li>
-//                  </ul>
-//                </div>`;
-//            add_cletka.append(div);
+            let div = document.createElement('div');
+            div.className = "row my-2";
+            //div.innerHTML = <label class=\"plain_text\">Kletka #${counter_clet - 1}</label>;
+            div.innerHTML = `<div class="dropdown" id=cletka${counter_clet}>
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    Клетка №${counter_clet}
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><label class="plain_text reg_label">Описание</label>
+                          <textarea class="form-control mb-3" id=cl_descrip${counter_clet} name="description">Example</textarea></li>
+            <li><label onclick=savedescrip(${counter_clet})>Сохранить</label></li>
+            <li><label onclick="cleanlastcell()">Удалить</label></li>
+                  </ul>
+                </div>`;
+            let info_cletka = document.getElementById("info_cletka");
+            info_cletka.append(div);
 
             counter_clet = counter_clet + 1;
 
