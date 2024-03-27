@@ -32,11 +32,18 @@
     <section>
         <div class="container-fluid draw_buttons">
             <div class="row">
-<!--                <h1>Тут будут кнопки</h1>-->
-                <input type="file" id="input" />
-                <button  onclick="save_rect()" class="btn btn-primary btn-block itd_enter_btn ">Сохранить</button>-->
-                <button  onclick="draw_tool()" class="btn btn-primary btn-block itd_enter_btn ">Rectangle</button>-->
-                <button  onclick="zoom_tool()" class="btn btn-primary btn-block itd_enter_btn ">Zoom</button>-->
+                <div class="col-3 d-flex flex-column justify-content-start">
+                    <input type="file" id="input" class="btn btn-primary btn-block itd_enter_btn my-2"/>
+                </div>
+                <div class="col-3 d-flex flex-column justify-content-start">
+                    <button onclick="save_rect()" class="btn btn-primary btn-block itd_enter_btn my-2">Сохранить</button>
+                </div>
+                <div class="col-3 d-flex flex-column justify-content-start">
+                    <button onclick="draw_tool()" class="btn btn-primary btn-block itd_enter_btn my-2">Rectangle</button>
+                </div>
+                <div class="col-3 d-flex flex-column justify-content-start">
+                    <button onclick="zoom_tool()" class="btn btn-primary btn-block itd_enter_btn my-2">Zoom</button>
+                </div>
             </div>
         </div>
         <div class="container-fluid draw_container">

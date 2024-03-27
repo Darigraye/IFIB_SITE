@@ -1,6 +1,7 @@
 var coord_map = new Map();
 var counter_clet = 1;
 var is_zoom = true;
+var first_time = true;
 
 //-----------------------------------------------------
 let canvas = document.getElementById("draw_canvas");
@@ -18,6 +19,8 @@ let canvas = document.getElementById("draw_canvas");
         var tools = {};
         var tool;
         var tool_default = "rect";
+//        var lastX=canvas.width/2, lastY=canvas.height/2;
+        var lastX=0, lastY=0;
 
         canvaso = document.getElementById("draw_canvas");
         contexto = canvaso.getContext("2d");
@@ -63,16 +66,17 @@ let canvas = document.getElementById("draw_canvas");
         });
         }
 
-        var lastX=canvas.width/2, lastY=canvas.height/2;
         var dragStart,dragged;
         canvas.addEventListener('mousedown',function(evt){
             let rect_canv = canvas.getBoundingClientRect()
             if (evt.layerX || evt.layerX == 0) {
-              evt._x = evt.layerX - rect_canv.left;
-              evt._y = evt.layerY - rect_canv.top;
+              evt._x = evt.layerX - canvas.offsetLeft;
+              evt._y = evt.layerY - canvas.offsetTop;
+              console.log("AAAAAAAAAAAAAAAAA", evt.layerX, evt.layerY, evt._x, evt._y);
             } else if (evt.offsetX || evt.offsetX == 0) {
-              evt._x = evt.offsetX - rect_canv.left;
-              evt._y = evt.offsetY - rect_canv.top;
+              evt._x = evt.offsetX - canvas.offsetLeft;
+              evt._y = evt.offsetY - canvas.offsetTop;
+              console.log("BBBBBBBBBBBBBBBB");
             }
 
             var func = tool[evt.type];
@@ -91,18 +95,16 @@ let canvas = document.getElementById("draw_canvas");
               tool.started = true;
               tool.x0 = evt._x;
               tool.y0 = evt._y;
-              a = evt._x;
-              b = evt._y;
           }
         },false);
         canvas.addEventListener('mousemove',function(evt){
             let rect_canv = canvas.getBoundingClientRect()
             if (evt.layerX || evt.layerX == 0) {
-              evt._x = evt.layerX - rect_canv.left;
-              evt._y = evt.layerY - rect_canv.top;
+              evt._x = evt.layerX - canvas.offsetLeft;
+              evt._y = evt.layerY - canvas.offsetTop;
             } else if (evt.offsetX || evt.offsetX == 0) {
-              evt._x = evt.offsetX - rect_canv.left;
-              evt._y = evt.offsetY - rect_canv.top;
+              evt._x = evt.offsetX - canvas.offsetLeft;
+              evt._y = evt.offsetY - canvas.offsetTop;
             }
 
             var func = tool[evt.type];
@@ -123,17 +125,20 @@ let canvas = document.getElementById("draw_canvas");
               if (!tool.started) {
                 return;
               }
-              var x = Math.min(evt._x, tool.x0),
-                y = Math.min(evt._y, tool.y0),
-                w = Math.abs(evt._x - tool.x0),
-                h = Math.abs(evt._y - tool.y0);
 
+              var pt = ctx.transformedPoint(0,0);
+              var scale = ctx.getTransform().a;
+              var x = Math.min(tool.x0, evt._x) / scale + pt.x,
+                y = Math.min(tool.y0, evt._y) / scale + pt.y,
+                w = Math.abs(evt._x - tool.x0) / scale,
+                h = Math.abs(evt._y - tool.y0) / scale;
+                console.log(x, y, w, h, pt.x, pt.y);
 //              context.clearRect(0, 0, canvas.width, canvas.height);
               context.strokeStyle = "black";
               for (let key in coord_map) {
                 //console.log(key, coord_map[key]);
                 //console.log(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
-                context.strokeRect(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
+                //context.strokeRect(coord_map[key][0], coord_map[key][1], coord_map[key][2] - coord_map[key][0], coord_map[key][3] - coord_map[key][1]);
               }
 
               if (!w || !h) {
@@ -147,11 +152,11 @@ let canvas = document.getElementById("draw_canvas");
         canvas.addEventListener('mouseup',function(evt){
             let rect_canv = canvas.getBoundingClientRect()
             if (evt.layerX || evt.layerX == 0) {
-              evt._x = evt.layerX - rect_canv.left;
-              evt._y = evt.layerY - rect_canv.top;
+              evt._x = evt.layerX - canvas.offsetLeft;
+              evt._y = evt.layerY - canvas.offsetTop;
             } else if (evt.offsetX || evt.offsetX == 0) {
-              evt._x = evt.offsetX - rect_canv.left;
-              evt._y = evt.offsetY - rect_canv.top;
+              evt._x = evt.layerX - canvas.offsetLeft;
+              evt._y = evt.layerY - canvas.offsetTop;
             }
 
             var func = tool[evt.type];
@@ -165,11 +170,11 @@ let canvas = document.getElementById("draw_canvas");
 //            redraw();
             if (tool.started) {
 //            tool.mousemove(evt);
-            c = evt._x;
-            d = evt._y;
-            tool.started = false;
 
-            coord_map[counter_clet] = [tool.x0, tool.y0, evt._x, evt._y];
+            tool.started = false;
+            var pt = ctx.transformedPoint(0,0);
+            var scale = ctx.getTransform().a;
+            coord_map[counter_clet] = [tool.x0 / scale + pt.x, tool.y0 / scale + pt.y, evt._x / scale + pt.x, evt._y / scale + pt.y];
 
 //            let div = document.createElement('div');
 //            div.className = "row my-2";
@@ -191,7 +196,7 @@ let canvas = document.getElementById("draw_canvas");
 
             context.setLineDash([6]);
             context.strokeStyle = "black";
-            context.strokeRect(tool.x0, tool.y0, evt._x - tool.x0, evt._y - tool.y0);
+            context.strokeRect(tool.x0 / scale + pt.x, tool.y0 / scale + pt.y, (evt._x - tool.x0) / scale, (evt._y - tool.y0) / scale);
             //console.log(coord_map);
           }
           }
